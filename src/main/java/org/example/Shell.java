@@ -6,31 +6,20 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import org.apache.commons.io.FileUtils;
 import org.jsfr.json.JacksonParser;
 import org.jsfr.json.JsonSurfer;
-import org.jsfr.json.path.JsonPath;
 import org.jsfr.json.provider.JacksonProvider;
 
-import java.io.*;
-import java.net.URI;
-import java.nio.file.*;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.SequenceInputStream;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
 
-import static java.lang.Math.min;
 import static org.jsfr.json.compiler.JsonPathCompiler.compile;
 
 public class Shell {
@@ -54,16 +43,16 @@ public class Shell {
 
     public static void main(String[] args) throws IOException {
 
+        var ID_ON_S3 = "d8736142-fc69-4ff7-9d21-b085a4389149";
+        var COUNT_OF_FILE = 5;
+
         initS3Client();
 
         var files = new LinkedList<String>();
 
-        var id = "d8736142-fc69-4ff7-9d21-b085a4389149";
-
-        for (int i = 1; i <= 5; i++) {
-            files.add("dictionary/" + id + "/" + i);
+        for (int i = 1; i <= COUNT_OF_FILE; i++) {
+            files.add("dictionary/" + ID_ON_S3 + "/" + i);
         }
-
 
         var d = new FileDownloader(files);
         var is = new SequenceInputStream(d);
